@@ -1,0 +1,5 @@
+interface disksrv
+{
+	[comm_status, fault_status] AddDisk ();
+	[comm_status, fault_status] RemoveDisk ();
+}

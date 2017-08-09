@@ -1,0 +1,26 @@
+TARGETNAME=vmdkplug
+TARGETTYPE=DYNLINK
+DLLENTRY   = _DllMainCRTStartup
+
+386_STDCALL=0
+
+USER_C_FLAGS=/D_NTSCSI_USER_MODE_ /Gd
+
+INCLUDES=$(DDK_INC_PATH);$(CRT_INC_PATH)\ATL71;..\..\inc;..\inc;..\vmdk\include;
+
+TARGETLIBS= \
+           $(SDK_LIB_PATH)\setupapi.lib \
+           $(SDK_LIB_PATH)\kernel32.lib \
+           $(SDK_LIB_PATH)\rpcrt4.lib \
+
+SOURCES= \
+vmdkplugin.cpp \
+VixWrapper.cpp \
+
+USE_MSVCRT=1
+USE_STL=1
+USE_ATL=1
+ATL_VER=70
+USE_NATIVE_EH=1
+
+_NT_TARGET_VERSION=$(_NT_TARGET_VERSION_WINXP)

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+      <FeatureRef Id="VMWarePlugin"></FeatureRef>
+      <UI>
+          <Dialog Id="InfoDlg" Width="370" Height="270" Title="[ProductName] [Setup] Information" NoMinimize="yes">
+            <Control Id="A" Hidden="no" Type="Text" X="45" Y="73" Width="300" Height="115" TabSkip="no"
+                     Text="Virtual Disk Development Kit is not installed.  Install the VDDK and run this package again.">
+            </Control>
+            <Control Id="Back" Type="PushButton" X="192" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
+            <Control Id="Cancel" Type="PushButton" X="248" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+              <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+            </Control>
+          </Dialog>
+        </UI>
+    </Fragment>
+</Wix>

@@ -1,0 +1,15 @@
+TARGETNAME=umdisk
+TARGETTYPE=DRIVER
+
+INCLUDES = ..\inc
+
+TARGETLIBS=  $(DDK_LIB_PATH)\wdmsec.lib \
+	     $(DDK_LIB_PATH)\ntstrsafe.lib
+
+SOURCES= busenum.rc \
+         busenum.c \
+         pnp.c \
+         power.c \
+         buspdo.c \
+
+_NT_TARGET_VERSION=$(_NT_TARGET_VERSION_WINXP)

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+    <DirectoryRef Id="VDISKINSTALLLOCATION">
+      <Directory Id="PLUGINS" Name="plugins">
+        <Component Id="VMWarePluginComp" Guid="285E25D6-ED46-4308-BC4D-99CFABCCF610">
+          <File Id="VMWarePluginFile" Name="vmdkplug.dll"
+              Source="..\umode\vmdkplug\objchk_wnet_x86\i386\vmdkplug.dll" DiskId="1" />
+          
+          <RegistryKey Root="HKLM"
+                       Key="SYSTEM\CurrentControlSet\Services\DiskSrv\Plugins\VMWare"
+                Action="createAndRemoveOnUninstall">
+            <RegistryValue Type="string" Name="fileName" Value="[#VMWarePluginFile]"/>
+            <RegistryValue Type="string" Name="options" Value="[VDDKPATH]bin"/>
+          </RegistryKey>
+          
+        </Component>
+      </Directory>
+    </DirectoryRef>
+      <FeatureRef Id="CoreFiles">
+      <Feature Id="VMWarePlugin" Title="VMWare vmdk disk support"
+           Description="Plugin for virtual disk provider to support VMWare virtual disks" Level="1"
+               AllowAdvertise="no">
+        <ComponentRef Id="VMWarePluginComp" />
+      </Feature>
+    </FeatureRef>
+  </Fragment>
+</Wix>

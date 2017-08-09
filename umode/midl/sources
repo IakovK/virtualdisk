@@ -1,0 +1,13 @@
+TARGETNAME=disksrv
+TARGETTYPE=NOTARGET
+UMTYPE=console
+UMENTRY=wmain
+UMBASE=0x400000
+
+SOURCES= \
+disksrv.idl \
+
+IDL_TYPE=rpc
+PASS0_HEADERDIR=..\inc
+PASS0_SERVERDIR=..\disksrv
+PASS0_CLIENTDIR=..\diskctl

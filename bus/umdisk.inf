@@ -1,0 +1,66 @@
+[Version]
+Signature="$WINDOWS NT$"
+Class=System
+ClassGuid={4D36E97D-E325-11CE-BFC1-08002BE10318}
+Provider=%MSFT%
+DriverVer=09/21/2008,1.0.0.1
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[SourceDisksNames]
+1 = %DiskId1%,,,""
+
+[SourceDisksFiles]
+umdisk.sys  = 1,,
+
+;*****************************************
+; DiskBus  Install Section
+;*****************************************
+
+[Manufacturer]
+%StdMfg%=Standard
+
+[Standard]
+;
+; These are the disk bus pnp ids
+;
+
+%DiskBus.DeviceDesc%=DiskBus_Device, root\umdisk
+
+[DiskBus_Device.NT]
+CopyFiles=Drivers_Dir
+
+[DiskBus_Device.NT.HW]
+AddReg=DiskBus_Device.NT.AddReg
+
+[DiskBus_Device.NT.AddReg]                            
+HKR,,DeviceCharacteristics,0x10001,0x0100         ; Use same security checks on relative opens
+HKR,,Security,,"D:P(A;;GA;;;BA)(A;;GA;;;SY)"      ; Allow generic-all access to Built-in administrators and Local system 
+
+[Drivers_Dir]
+umdisk.sys
+
+
+;-------------- Service installation
+[DiskBus_Device.NT.Services]
+AddService = umdisk,%SPSVCINST_ASSOCSERVICE%, umdisk_Service_Inst
+
+; -------------- umdisk driver install sections
+[umdisk_Service_Inst]
+DisplayName    = %umdisk.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START 
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\umdisk.sys
+LoadOrderGroup = Extended Base
+
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+MSFT = "Microsoft"
+StdMfg = "VDSoft"
+DiskId1 = "Disk Bus Installation Disk #1"
+DiskBus.DeviceDesc = "Virtual Disk provider"
+umdisk.SVCDESC = "Virtual Disk provider"
+

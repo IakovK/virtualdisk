@@ -1,0 +1,2 @@
+Setup=bin\release\setup.exe
+TempMode

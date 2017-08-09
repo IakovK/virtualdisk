@@ -1,0 +1,28 @@
+TARGETNAME=ca
+TARGETTYPE=DYNLINK
+UMTYPE=console
+
+386_STDCALL=0
+
+USER_C_FLAGS=/D_NTSCSI_USER_MODE_ /Gd /wd4995
+
+INCLUDES=..\..\..\sdk6\Include
+
+TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+           $(SDK_LIB_PATH)\user32.lib   \
+           $(SDK_LIB_PATH)\setupapi.lib \
+           $(SDK_LIB_PATH)\advapi32.lib \
+           $(SDK_LIB_PATH)\shlwapi.lib  \
+           $(SDK_LIB_PATH)\newdev.lib   \
+           ..\..\..\sdk6\lib\Msi.Lib    \
+
+SOURCES= \
+ca.cpp \
+
+USE_MSVCRT=1
+USE_STL=1
+USE_ATL=1
+ATL_VER=70
+USE_NATIVE_EH=1
+
+_NT_TARGET_VERSION=$(_NT_TARGET_VERSION_WINXP)

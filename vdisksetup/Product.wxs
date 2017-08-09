@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="033b0289-1d52-4d38-956d-89b98542ead3" Name="virtual disk provider"
+			 Language="1033" Version="1.0.0.1" Manufacturer="VDDeveloper"
+			 UpgradeCode="7b7a84a5-632a-4745-8a7e-4319bcfe34fb">
+		<Package InstallerVersion="200" Compressed="yes" />
+		<UI>
+			<ProgressText Action="InstallDriver">Installing driver</ProgressText>
+			<Publish Dialog="ExitDialog"
+					 Control="Finish"
+					 Event="DoAction"
+					 Value="StartService">
+				NOT Installed
+			</Publish>
+		</UI>
+
+    <UI Id="WixUI_FeatureTree">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Property Id="WixUI_Mode" Value="FeatureTree" />
+
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg">1</Publish>
+
+      <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
+      <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="CustomizeDlg">LicenseAccepted = "1"</Publish>
+
+      <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="1">Installed</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementDlg" Order="2">NOT Installed</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="InfoDlg"><![CDATA[NOT VDDKPATH AND &VMWarePlugin=3]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[VDDKPATH OR &VMWarePlugin<>3]]></Publish>
+      <Publish Dialog="InfoDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg">1</Publish>
+
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg" Order="1">NOT Installed OR WixUI_InstallMode = "Change"</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="2">Installed</Publish>
+
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+
+      <Publish Dialog="MaintenanceTypeDlg" Control="ChangeButton" Event="NewDialog" Value="CustomizeDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>
+    </UI>
+
+    <UIRef Id="WixUI_Common" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <Condition Message="This application is only supported on Windows XP, or higher.">
+      <![CDATA[Installed OR (VersionNT >= 501)]]>
+    </Condition>
+    <Condition Message="This application is only supported 32-bit systems.">
+      <![CDATA[Installed OR (NOT VersionNT64)]]>
+    </Condition>
+    <Condition Message="You need to be an administrator to install this product.">
+			Privileged
+		</Condition>
+		<Condition Message="The driver component of this package is already installed. Remove it and run the installation again">
+			<![CDATA[Installed OR (NOT DRIVERINSTALLED)]]>
+		</Condition>
+		<Media Id="1" Cabinet="vdisksetup.cab" EmbedCab="yes" />
+
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="VDISKINSTALLLOCATION" Name="virtual disk provider">
+					<Directory Id="DRIVERFILES" Name="driver">
+						<Component Id="DriverBinaryComp" Guid="240a9862-6369-4607-a777-1ee739131163">
+							<File Id="DriverBinaryFile" Name="umdisk.sys"
+								  Source="..\bus\objfre_wnet_x86\i386\umdisk.sys " DiskId="1" />
+							<File Id="DriverInfFile" Name="umdisk.inf"
+								  Source="..\bus\umdisk.inf" DiskId="1" />
+						</Component>
+					</Directory>
+          <Component Id="ServiceBinaryComp" Guid="2B5E0B4F-F59C-4468-AE22-15222D73D2C6">
+						<File Id="ServiceBinaryFile" Name="disksrv.exe"
+							  Source="..\umode\disksrv\objfre_wnet_x86\i386\disksrv.exe" DiskId="1" />
+						<ServiceInstall Id="disksrv" Name="disksrv" DisplayName="virtual disks service"
+										Description="Provides access to virtual disk files as to disks"
+										Start="auto" Type="ownProcess" ErrorControl="normal"/>
+						<ServiceControl Id="disksrv" Name="disksrv" Remove="uninstall"
+										Stop="install"/>
+						<Environment Id="updatepath" Name="PATH" Action="set" Part="first"
+									 Value="[VDISKINSTALLLOCATION]" System="yes"/>
+					</Component>
+          
+					<Component Id="ServiceControlComp" Guid="9836CB8A-97B4-40e7-8F86-A994EC4B36EC">
+						<File Id="ServiceControlFile" Name="diskctl.exe"
+							  Source="..\umode\diskctl\objfre_wnet_x86\i386\diskctl.exe" DiskId="1" />
+						<File Id="LicenseFile" Name="License.rtf"
+							  Source="License.rtf" DiskId="1" />
+						<File Id="readmeFile" Name="readme.txt"
+							  Source="readme.txt" DiskId="1" />
+					</Component>
+
+        </Directory>
+			</Directory>
+		</Directory>
+
+    <Feature Id="CoreFiles" Title="virtual disk provider"
+				 Description="virtual disk provider" Level="1" AllowAdvertise="no"
+             Absent="disallow" ConfigurableDirectory="VDISKINSTALLLOCATION" Display="expand">
+      <ComponentRef Id="DriverBinaryComp" />
+      <ComponentRef Id="ServiceBinaryComp" />
+      <ComponentRef Id="ServiceControlComp" />
+    </Feature>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="VDISKINSTALLLOCATION" />
+    <Property Id="ALLUSERS" Value="1" />
+		<Property Id="ARPNOREPAIR" Value="1" />
+		<Property Id="INFFILEFORCA" Value="DriverInfFile" />
+		<Property Id="DEVICEIDFORCA" Value="root\umdisk" />
+		<Property Id="VDDKPATH">
+			<RegistrySearch Id="VDDK"
+					Root="HKLM"
+					Key="SOFTWARE\VMware, Inc.\VMware Virtual Disk Development Kit"
+					Name="InstallPath"
+					Type="raw" />
+		</Property>
+    
+		<CustomAction Id='CheckDriverInstalled' BinaryKey='caDll' DllEntry='CheckInstall'
+					  Return='check'/>
+    <CustomAction Id='InstallDriver' BinaryKey='caDll' DllEntry='Install' Execute='deferred' Impersonate='no'
+					  Return='check'/>
+    <CustomAction Id='InstallDriverRollback' BinaryKey='caDll' DllEntry='Uninstall' Execute='rollback' Impersonate='no'
+					  Return='check'/>
+    <CustomAction Id='UninstallDriver' BinaryKey='caDll' DllEntry='Uninstall' Execute='deferred'
+					  Return='check'/>
+    <CustomAction Id='PropertyAssign' Property='INFFILEFORCA'
+					  Value='[#DriverInfFile]' />
+		<CustomAction Id='PropertyAssign1' Property='ARPREADME'
+					  Value='[#readmeFile]' />
+		<CustomAction Id='PropertyAssignDeferred' Property='InstallDriver'
+					  Value='[INFFILEFORCA];[DEVICEIDFORCA]' />
+		<CustomAction Id='PropertyAssignForUninstall' Property='UninstallDriver'
+					  Value='[DEVICEIDFORCA]' />
+		<CustomAction Id="StartService" BinaryKey="scripts" JScriptCall="StartService"/>
+		<Binary Id='caDll' SourceFile='..\ca\objfre_wnet_x86\i386\ca.dll '/>
+		<Binary Id='scripts' SourceFile='scripts.js'/>
+
+		<InstallUISequence>
+			<Custom Action='CheckDriverInstalled' Before='LaunchConditions'>
+				NOT Installed
+			</Custom>
+		</InstallUISequence>
+		<InstallExecuteSequence>
+			<Custom Action='PropertyAssign' After='InstallFiles'>
+				NOT Installed
+			</Custom>
+			<Custom Action='PropertyAssignDeferred' After='PropertyAssign'>
+				NOT Installed
+			</Custom>
+			<Custom Action='PropertyAssign1' After='PropertyAssign'>
+				NOT Installed
+			</Custom>
+			<Custom Action='InstallDriver' After='InstallDriverRollback'>
+				NOT Installed
+			</Custom>
+      <Custom Action='InstallDriverRollback' After='PropertyAssignDeferred'>
+        NOT Installed
+      </Custom>
+      <Custom Action='PropertyAssignForUninstall' After='InstallFiles'>
+        1
+      </Custom>
+      <Custom Action='UninstallDriver' After='PropertyAssignForUninstall'>
+        REMOVE = "ALL"
+      </Custom>
+    </InstallExecuteSequence>
+	</Product>
+</Wix>

@@ -1,0 +1,16 @@
+typedef unsigned long ULONG;
+#define CONST               const
+typedef wchar_t WCHAR;    // wc,   16-bit UNICODE character
+typedef CONST WCHAR *LPCWSTR, *PCWSTR;
+
+[
+uuid(2106ecb0-09de-464a-9be9-ef3aff4b0b07),
+version(1.0),
+]
+interface disksrv
+{
+	error_status_t AddDisk ([in] handle_t Binding,
+                [in] ULONG diskId,
+		[in, string] LPCWSTR diskType, [in, string] LPCWSTR diskName);
+	error_status_t RemoveDisk ([in] handle_t Binding, [in] ULONG diskId);
+}
