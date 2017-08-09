@@ -1,12 +1,12 @@
 # virtualdisk
-virtual disk for Windows sample
+
 It is a sample that illustrates how to create virtual disks - similar to Microsoft VHD services.
 
 The sample consists of the following components:
-driver - in subfolder bus;
-service - user mode companion of driver in subfolder umode\disksrv;
-control program - to manage virtual disks, in subfolder umode\diskctl;
-sample plugin to handle VMWare vmdk files - in subfolder umode\vmdkplug.
+* driver - in subfolder bus;
+* service - user mode companion of driver in subfolder umode\disksrv;
+* control program - to manage virtual disks, in subfolder umode\diskctl;
+* sample plugin to handle VMWare vmdk files - in subfolder umode\vmdkplug.
 
 Driver exposes disks to the operating system.
 After it receives a command from the service, it announces that the disk is ready to use.
@@ -21,4 +21,4 @@ The service itself implements simple block storage in files. But it allows plugi
 Sample plugin is included that illustrates how to handle VMWare vmdk files.
 
 To build:
-use Visual Studio and Windows Driver Kit.To build the sample plugin VMWare virtual disk sdk is needed.
+* use Visual Studio and Windows Driver Kit.To build the sample plugin VMWare virtual disk sdk is needed.
